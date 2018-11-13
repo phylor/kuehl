@@ -32,9 +32,9 @@ const byte KEYPAD_COLS = 4;
 
 // Keypad pin configuration (pin 1 and 10 are unused)
 // Pins 2-5 on keypad
-byte colPins[KEYPAD_COLS] = {13, 12, 14, 27};
+byte colPins[KEYPAD_COLS] = {32, 33, 25, 26};
 // Pins 6-9 on keypad
-byte rowPins[KEYPAD_ROWS] = {26, 25, 32, 0};
+byte rowPins[KEYPAD_ROWS] = {27, 14, 12, 13};
 
 char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
   {'1','2','3','A'},
