@@ -1,7 +1,7 @@
 /*
  * Required libraries
  * - Arduino Keypad
- * - Adafruit Neopixel
+ * - NeoPixelBus
  * - WifiManager, https://github.com/tzapu/WiFiManager/tree/development
  * - ArduinoJson, version 5.x
  */
@@ -9,7 +9,7 @@
 #include <FS.h>
 #include <SPIFFS.h>
 #include <Keypad.h>
-#include <Adafruit_NeoPixel.h>
+#include <NeoPixelBus.h>
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
@@ -21,7 +21,7 @@
 /*****************************************************
  * RGB LED configuration
  ****************************************************/
-#define RGB_PIN        16
+#define RGB_PIN        4
 #define NUMPIXELS      1
 
 /*****************************************************
@@ -58,7 +58,7 @@ char projectId[64];
 bool shouldSaveConfig = false;
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, KEYPAD_ROWS, KEYPAD_COLS );
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, RGB_PIN, NEO_RGB + NEO_KHZ800);
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> pixels(NUMPIXELS, RGB_PIN);
 WiFiManager wifiManager;
 HTTPClient http;
 
@@ -88,30 +88,30 @@ String uuid() {
 }
 
 void showLed(ledColor colorName) {
-  uint32_t colorValue = pixels.Color(150, 150, 150);
+  RgbColor colorValue;
   
   switch(colorName) {
     case yellow:
-      colorValue = pixels.Color(150, 150, 0);
+      colorValue = RgbColor(150, 150, 0);
       break;
     case red:
-      colorValue = pixels.Color(150, 0, 0);
+      colorValue = RgbColor(0, 150, 0);
       break;
     case blue:
-      colorValue = pixels.Color(0, 0, 150);
+      colorValue = RgbColor(0, 0, 150);
       break;
     default:
-      colorValue = pixels.Color(150, 150, 150);
+      colorValue = RgbColor(150, 150, 150);
       break;
   }
   
-  pixels.setPixelColor(0, colorValue);
-  pixels.show();
+  pixels.SetPixelColor(0, colorValue);
+  pixels.Show();
 }
 
 void turnOffLed() {
-  pixels.setPixelColor(0, pixels.Color(0, 0, 0));
-  pixels.show();
+  pixels.SetPixelColor(0, RgbColor(0));
+  pixels.Show();
 }
 
 String urlencode(String str)
@@ -155,8 +155,8 @@ String urlencode(String str)
 void setup() {
   Serial.begin(115200);
 
-  pixels.begin();
-  pixels.setBrightness(100);
+  pixels.Begin();
+  pixels.Show();
   
   showLed(yellow);
 
@@ -246,6 +246,8 @@ void configModeCallback(WiFiManager *myWiFiManager) {
 void saveConfigCallback () {
   Serial.println("Should save config");
   shouldSaveConfig = true;
+
+  turnOffLed();
 }
 
 /*****************************************************
